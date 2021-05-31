@@ -1,5 +1,6 @@
 import 'package:ff_navigation_bar/ff_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/app/modules/home/home_controller.dart';
 import 'package:todo_list/app/modules/new_task/new_task_page.dart';
@@ -9,6 +10,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<HomeController>(
       builder: (BuildContext context, HomeController controller, _) {
+        var listTodos = controller.listTodos;
         return Scaffold(
           appBar: AppBar(
             title: Text(
@@ -30,8 +32,12 @@ class HomePage extends StatelessWidget {
               selectedItemBackgroundColor: Theme.of(context).primaryColor,
               selectedItemLabelColor: Colors.black,
             ),
-            onSelectTab: (index) => controller.changeSelectedTab(index),
+            onSelectTab: (index) => controller.changeSelectedTab(context, index),
             items: [
+              FFNavigationBarItem(
+                iconData: Icons.check_circle,
+                label: 'Finalizados',
+              ),
               FFNavigationBarItem(
                 iconData: Icons.view_week,
                 label: 'Semanal',
@@ -40,37 +46,47 @@ class HomePage extends StatelessWidget {
                 iconData: Icons.calendar_today,
                 label: 'Selecionar Data',
               ),
-              FFNavigationBarItem(
-                iconData: Icons.check_circle,
-                label: 'Finalizados',
-              )
             ],
           ),
           body: Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: ListView.builder(
-              itemCount: 3,
+              itemCount: listTodos?.keys?.length ?? 0,
               itemBuilder: (_, index) {
+                var dateFormat = DateFormat('dd/MM/yyyy');
+                var dayKey = listTodos.keys.elementAt(index);
+                var day = dayKey;
+                var todos = listTodos[dayKey];
+                var today = DateTime.now();
+
+                if (todos.isEmpty && controller.selectedTab == 0) {
+                  return SizedBox.shrink();
+                }
+
+                if (dayKey == dateFormat.format(today)) {
+                  day = 'HOJE';
+                } else if (dayKey == dateFormat.format(today.add(Duration(days: 1)))) {
+                  day = 'AMANHÃ';
+                }
+
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Padding(
-                      padding:
-                          const EdgeInsets.only(left: 20, right: 20, top: 20),
+                      padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                       child: Row(
                         children: [
                           Expanded(
                               child: Text(
-                            'Hoje',
+                            day,
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.bold,
                             ),
                           )),
                           IconButton(
-                            onPressed: () => Navigator.of(context)
-                                .pushNamed(NewTaskPage.routerName),
+                            onPressed: () => Navigator.of(context).pushNamed(NewTaskPage.routerName),
                             icon: Icon(
                               Icons.add_circle,
                               color: Theme.of(context).primaryColor,
@@ -83,29 +99,29 @@ class HomePage extends StatelessWidget {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: 10,
+                      itemCount: todos.length,
                       itemBuilder: (_, index) {
+                        var todo = todos[index];
                         return ListTile(
                           leading: Checkbox(
-                            value: false,
-                            onChanged: (bool value) {},
+                            activeColor: Theme.of(context).primaryColor,
+                            value: todo.finalizado,
+                            onChanged: (bool value) => controller.checkedOrUnchecked(todo),
                           ),
                           title: Text(
-                            'Tarefa X',
+                            todo.descricao,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
-                              decoration:
-                                  true ? TextDecoration.lineThrough : null,
+                              decoration: todo.finalizado ? TextDecoration.lineThrough : null,
                             ),
                           ),
                           trailing: Text(
-                            '6:00',
+                            '${todo.dataHora.hour}:${todo.dataHora.minute}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
-                              decoration:
-                                  true ? TextDecoration.lineThrough : null,
+                              decoration: todo.finalizado ? TextDecoration.lineThrough : null,
                             ),
                           ),
                         );

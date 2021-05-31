@@ -6,7 +6,7 @@ void createV1(Batch batch) {
     id Integer primary key autoincrement,
     descricao varchar(500) not null,
     data_hora datetime,
-    finalizando Integer
+    finalizado Integer
   )
   ''');
 }
