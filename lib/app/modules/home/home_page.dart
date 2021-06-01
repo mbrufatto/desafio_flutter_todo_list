@@ -86,7 +86,13 @@ class HomePage extends StatelessWidget {
                             ),
                           )),
                           IconButton(
-                            onPressed: () => Navigator.of(context).pushNamed(NewTaskPage.routerName),
+                            onPressed: () async {
+                              await Navigator.of(context).pushNamed(
+                                NewTaskPage.routerName,
+                                arguments: dayKey,
+                              );
+                              controller.update();
+                            },
                             icon: Icon(
                               Icons.add_circle,
                               color: Theme.of(context).primaryColor,
@@ -117,7 +123,7 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                           trailing: Text(
-                            '${todo.dataHora.hour}:${todo.dataHora.minute}',
+                            '${todo.dataHora.hour.toString().padLeft(2, '0')}:${todo.dataHora.minute.toString().padLeft(2, '0')}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
