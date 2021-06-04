@@ -27,8 +27,8 @@ class TodosRepository {
     await conn.rawUpdate('update todo set finalizado = ? where id = ?', [todo.finalizado ? true : false, todo.id]);
   }
 
-  Future<void> removeTodo(TodoModel todo) async {
+  Future<void> removeTodo(int id) async {
     var conn = await Connection().instance;
-    await conn.rawDelete('delete from todo where id = ?', [todo.id]);
+    await conn.rawDelete('delete from todo where id = ?', [id]);
   }
 }
