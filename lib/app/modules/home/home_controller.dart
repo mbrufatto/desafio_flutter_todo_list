@@ -102,4 +102,13 @@ class HomeController extends ChangeNotifier {
       this.findTodoBySelectedDay();
     }
   }
+
+  Future<void> delete(TodoModel todo) async {
+    await repository.removeTodo(todo);
+    if (selectedTab == 1) {
+      this.findAllForWeek();
+    } else if (selectedTab == 2) {
+      this.findTodoBySelectedDay();
+    }
+  }
 }

@@ -108,26 +108,33 @@ class HomePage extends StatelessWidget {
                       itemCount: todos.length,
                       itemBuilder: (_, index) {
                         var todo = todos[index];
-                        return ListTile(
-                          leading: Checkbox(
-                            activeColor: Theme.of(context).primaryColor,
-                            value: todo.finalizado,
-                            onChanged: (bool value) => controller.checkedOrUnchecked(todo),
-                          ),
-                          title: Text(
-                            todo.descricao,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              decoration: todo.finalizado ? TextDecoration.lineThrough : null,
+                        return Dismissible(
+                          key: Key(todos[index].id.toString()),
+                          onDismissed: (direction) {
+                            controller.delete(todos[index]);
+                          },
+                          background: Container(color: Colors.red),
+                          child: ListTile(
+                            leading: Checkbox(
+                              activeColor: Theme.of(context).primaryColor,
+                              value: todo.finalizado,
+                              onChanged: (bool value) => controller.checkedOrUnchecked(todo),
                             ),
-                          ),
-                          trailing: Text(
-                            '${todo.dataHora.hour.toString().padLeft(2, '0')}:${todo.dataHora.minute.toString().padLeft(2, '0')}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              decoration: todo.finalizado ? TextDecoration.lineThrough : null,
+                            title: Text(
+                              todo.descricao,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                decoration: todo.finalizado ? TextDecoration.lineThrough : null,
+                              ),
+                            ),
+                            trailing: Text(
+                              '${todo.dataHora.hour.toString().padLeft(2, '0')}:${todo.dataHora.minute.toString().padLeft(2, '0')}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                decoration: todo.finalizado ? TextDecoration.lineThrough : null,
+                              ),
                             ),
                           ),
                         );

@@ -35,17 +35,12 @@ class _NewTaskPageState extends State<NewTaskPage> {
               content: Text('Todo cadastrado com sucesso'),
             ),
           );
-
+          Provider.of<NewTaskController>(context, listen: false).removeListener(() {});
+          controller.removeListener(() {});
           Future.delayed(Duration(seconds: 1), () => Navigator.pop(context));
         }
       });
     });
-  }
-
-  @override
-  void dispose() {
-    Provider.of<NewTaskController>(context, listen: false).removeListener(() {});
-    super.dispose();
   }
 
   @override
